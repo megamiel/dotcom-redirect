@@ -1,0 +1,28 @@
+サーバにアクセスし、laravelディレクトリ内にcd
+git cloneする(https://github.com/megamiel/dotcom-redirect.git)
+cd dotcom-redirect
+composer update
+composer install
+cp .env.example .env
+geany .env
+
+以下に書き換える
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=dotcom_redirect
++DB_USERNAME=phpmyadmin
++DB_PASSWORD=1234321
+
+http://[IPアドレス]/phpmyadmin/index.phpにアクセスし、データベース(dotcom-redirect)を作成
+
+php artisan migrate
+php artisan key:generate
+
+firebaseコンソール → authentication → 設定 → 承認済みドメイン → ドメインの追加 → webサーバのIPアドレスを入力し、ドメインを許可する
+
+npm install
+npm run dev
+
+(これで動かなかったら、npm install --save firebase も必要かも？)
+

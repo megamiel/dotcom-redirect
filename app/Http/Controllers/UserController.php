@@ -72,6 +72,8 @@ class UserController extends Controller
     {
         if (User::where('email', $request->get('email'))->count() > 0) return;
 
+        
+
         // 新規のUserモデルを作成する
         $user = new User();
 

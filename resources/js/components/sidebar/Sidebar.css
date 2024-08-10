@@ -3,12 +3,14 @@
     width:18%;
     background-color: #2d445d;
     position:fixed;
+    user-select: none;
 }
 
 .SidebarIcon{
     padding-top:20px;
     text-align: center;
     margin:0;
+    overflow:hidden;
 }
 
 .SidebarIcon img{
@@ -40,6 +42,8 @@
     color:white;
     justify-content: center;
     align-items: center;
+    background-color: #2d445d;
+    transition:background-color 0.5s;
 }
 
 .SidebarList .row .icon{
@@ -53,6 +57,8 @@
     cursor:pointer;
     /* background-color: #3b627a; */
     background-color: #4b627a;
+
+    transition:background-color 0.5s;
 }
 
 .SidebarList .row .title{

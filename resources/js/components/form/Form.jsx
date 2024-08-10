@@ -1,22 +1,28 @@
 import { TextField } from "@mui/material";
 import React, { useState } from "react";
-import exams from "../exam/ExamData";
-import subjects from "../exam/SubjectData";
+import exams from "../exam/ScExamData";
+import apSubjects from "../exam/ApSubjectData";
+import feSubjects from "../exam/FeSubjectData";
+import examCategorys from "../exam/ExamCategoryData";
+import { AP, FE, SC } from "../exam/Consts";
+import { FORM_COMPLETE } from "../PageModes";
+import API_URI from "../../ApiUri";
 
-const Form = ({ user,setPageMode }) => {
+const Form = ({ user, setPageMode }) => {
+  const [selectedExamCategory, setSelectedExamCategory] =
+    useState("non_select");
   const [selectedExam, setSelectedExam] = useState("non_select");
-  const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedQuestionNum, setSelectedQuestionNum] = useState(-1);
   const [inputedScore, setInputedScore] = useState(null);
   const [scoreInputMessage, setScoreInputMessage] = useState(<></>);
   const [inputedShare, setInputedShare] = useState(null);
 
-  const examSelectedHandler = (option) => {
-    setSelectedExam(option.value);
+  const examCategorySelectedHandler = (option) => {
+    setSelectedExamCategory(option.value);
   };
 
-  const subjectSelectedHandler = (input) => {
-    setSelectedSubject(input.value);
+  const examSelectedHandler = (option) => {
+    setSelectedExam(option.value);
   };
 
   const questionNumSelectedHandler = (input) => {
@@ -35,52 +41,62 @@ const Form = ({ user,setPageMode }) => {
     setInputedShare(input.value);
   };
 
-  const submitHandler = async(e) => {
+  let canSubmit = true;
+  const submitHandler = async (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
+    canSubmit = false;
     const user_id = user.id;
+    const exam_category = selectedExamCategory;
     const exam_num = selectedExam;
-    const subject = selectedSubject;
-    const question_num =
-      subject == "情報処理安全確保支援士試験" ? selectedQuestionNum : -1;
+    const question_num = selectedQuestionNum;
     const score = inputedScore;
     const share = inputedShare == null ? "なし" : inputedShare;
 
+    const isSelectedExamCategory = exam_category != "non_select";
     const isSelectedExamNum = exam_num != "non_select";
-    const isSelectedSubject = subject != null;
-    const isSelectedQuestionNum =
-      subject != "情報処理安全確保支援士試験" || question_num > -1;
-    const isScoreNumeric = score != null && score != "" && !isNaN(score)&&score>=0&&score<=100;
+    const isSelectedQuestionNum = question_num > -1;
+    const isScoreNumeric =
+      score != null &&
+      score != "" &&
+      !isNaN(score) &&
+      score >= 0 &&
+      score <= 100;
     const isInputedShare = share != null;
 
     if (
+      isSelectedExamCategory &&
       isSelectedExamNum &&
-      isSelectedSubject &&
       isSelectedQuestionNum &&
       isScoreNumeric &&
       isInputedShare
     ) {
       const result = {
         user_id,
+        exam_category,
         exam_num,
-        subject,
         question_num,
         score,
         share,
         method: "insert",
       };
 
-      // console.log(result);
-
       // サーバから返ってきたリザルトデータ
-      const ret=await axios.post("/api/results", result);
-      user.results.push(ret);
+      const ret = await axios.post(`${API_URI}/results`, result);
+      user.results.push(ret.data);
 
       // 送信完了画面に遷移したほうがよさそう
-      setPageMode("form_complete");
-    }else{
+      setPageMode(FORM_COMPLETE);
+    } else {
       // どこがダメかメッセージ表示する
-      console.log("入力が正しくありません")
+      console.log("入力が正しくありません");
     }
+  };
+
+  const setExamCategorys = () => {
+    return examCategorys.map((category, i) => (
+      <option key={i}>{category}</option>
+    ));
   };
 
   const setExams = () => {
@@ -91,65 +107,95 @@ const Form = ({ user,setPageMode }) => {
     ));
   };
 
-  const setSubjects = () => {
-    return subjects.map((subject, i) => (
-      <div key={i}>
-        <label>
-          <input
-            type="radio"
-            name="subject"
-            value={subject}
-            onClick={(e) => subjectSelectedHandler(e.target)}
-          />
-          {subject}
-        </label>
-      </div>
-    ));
-  };
-
   const setQuestionNums = () => {
-    if (
-      selectedExam == "non_select" ||
-      selectedSubject != "情報処理安全確保支援士試験"
-    ) {
-      return <></>;
-    } else {
-      const examData = exams.filter((exam) => exam.name == selectedExam)[0];
-      const questionNumElements = [];
+    switch (selectedExamCategory) {
+      case FE:
+        return feSubjects.map((subject, i) => (
+          <div key={i}>
+            <label>
+              <input
+                type="radio"
+                name="question_num"
+                value={i}
+                onClick={(e) => questionNumSelectedHandler(e.target)}
+              />
+              {subject}
+            </label>
+          </div>
+        ));
+      case AP:
+        return apSubjects.map((subject, i) => (
+          <div key={i}>
+            <label>
+              <input
+                type="radio"
+                name="question_num"
+                value={i}
+                onClick={(e) => questionNumSelectedHandler(e.target)}
+              />
+              {subject}
+            </label>
+          </div>
+        ));
+      case SC:
+        if (selectedExam == "non_select") {
+          return (
+            <label>
+              <input type="radio" name="question_num" />
+              該当なし
+            </label>
+          );
+        }
+        const examData = exams.filter((exam) => exam.name == selectedExam)[0];
+        const questionNumElements = [];
 
-      [1, 2].forEach((i) => {
-        questionNumElements.push(
-          [...Array(examData[`pm${i}Len`])].map((ignore, index) => (
-            <div key={index}>
-              <label>
-                <input
-                  type="radio"
-                  name="question_num"
-                  value={(i - 1) * 4 + index}
-                  onChange={(e) => questionNumSelectedHandler(e.target)}
-                />
-                午後{i}:問{index + 1}
-              </label>
-            </div>
-          ))
+        [1, 2].forEach((i) => {
+          questionNumElements.push(
+            [...Array(examData[`pm${i}Len`])].map((ignore, index) => (
+              <div key={index}>
+                <label>
+                  <input
+                    type="radio"
+                    name="question_num"
+                    value={(i - 1) * 4 + index}
+                    onChange={(e) => questionNumSelectedHandler(e.target)}
+                  />
+                  午後<span className="scNumber">{i == 1 ? "Ⅰ" : "Ⅱ"}</span>:問
+                  {index + 1}
+                </label>
+              </div>
+            ))
+          );
+        });
+        return questionNumElements;
+      default:
+        return (
+          <label>
+            <input type="radio" name="question_num" />
+            該当なし
+          </label>
         );
-      });
-      return (
-        <div>
-          <fieldset>
-            <legend>問題番号を選択してください</legend>
-            {questionNumElements}
-          </fieldset>
-        </div>
-      );
     }
   };
 
   return (
-    <div>
+    <div className="noneSelect">
       <form onSubmit={submitHandler}>
         <input name="user_id" value={user.id} readOnly hidden />
         <div>
+          <fieldset>
+            <legend>試験区分を選択してください</legend>
+            <select
+              onChange={(e) => examCategorySelectedHandler(e.target)}
+              style={{ textAlign: "center" }}
+            >
+              <option key={-1} value="non_select">
+                - 選択 -
+              </option>
+              {setExamCategorys()}
+            </select>
+          </fieldset>
+
           <fieldset>
             <legend>試験回を選択してください</legend>
             <select
@@ -162,14 +208,11 @@ const Form = ({ user,setPageMode }) => {
             </select>
           </fieldset>
         </div>
-        <div>
-          <fieldset>
-            <legend>学習科目を選択してください</legend>
-            {setSubjects()}
-          </fieldset>
-        </div>
 
-        {setQuestionNums()}
+        <fieldset>
+          <legend>問題を選択してください</legend>
+          {setQuestionNums()}
+        </fieldset>
 
         <div>
           <fieldset>

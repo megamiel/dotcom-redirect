@@ -1,0 +1,43 @@
+.profileEditor{
+  display:flex;
+}
+
+.profileIcon {
+  object-fit: cover;
+  width: 100%;
+  border-radius: 100%;
+  background-color: white;
+  border: violet 2.5px solid;
+  margin-bottom: 3%;
+}
+
+.profileIcon:hover{
+  cursor: pointer;
+}
+
+.saveButton {
+  appearance: auto;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  line-height: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: center;
+  align-items: flex-start;
+  cursor: default;
+  box-sizing: border-box;
+  margin: 0em;
+  padding-block: 4px;
+  padding-inline: 6px;
+  border-width: 2px;
+  border-style: outset;
+  border-image: initial;
+  border: black 2px solid;
+}
+
+.saveButton:hover {
+  cursor: pointer;
+}

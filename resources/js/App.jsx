@@ -1,21 +1,44 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "./components/sidebar/Sidebar";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./components/home/Home";
 import "./App.css";
 import Profile from "./components/profile/Profile";
 import Form from "./components/form/Form";
 import { useGetUser, useCurrentUser } from "./hooks/User";
+// 使用箇所なしだけど必須
 import { authData } from "./components/auth/firebase";
 import axios from "axios";
 import FormComplete from "./components/form/FormComplete";
+import {
+  FORM,
+  HOME,
+  NEW_FORM,
+  NEW_HOME,
+  NEW_PROFILE,
+  PROFILE,
+} from "./components/PageModes";
+import API_URI from "./ApiUri";
 
 const App = () => {
   const authData = JSON.parse(localStorage.getItem("authData"));
-  const sessionPageMode=sessionStorage.getItem("pageMode");
-  const [pageMode, setPageMode] = useState(sessionPageMode==null?"home":sessionPageMode);
+  const sessionPageMode = sessionStorage.getItem("pageMode");
+  const [pageMode, setPageMode] = useState(
+    sessionPageMode == null ? HOME : sessionPageMode
+  );
   const { isLoading } = useGetUser();
   const user = useCurrentUser();
+
+  switch (pageMode) {
+    case NEW_HOME:
+      setPageMode(HOME);
+      break;
+    case NEW_PROFILE:
+      setPageMode(PROFILE);
+      break;
+    case NEW_FORM:
+      setPageMode(FORM);
+      break;
+  }
 
   if (user == "") {
     const now = new Date();
@@ -29,25 +52,37 @@ const App = () => {
       token: "ctfdotcom{dotcomredirectprojecttoken}",
       icon_url: authData.photoURL,
       start_date: `${year}-${month}-${day}`,
-      method:"insert",
+      method: "insert",
     };
-    axios.post("/api/users",new_user);
-    window.location="/";
-    return <></>
+    axios.post(`${API_URI}/users`, new_user);
+    // 再読み込み
+    window.location = "./";
+    return <></>;
   }
 
   const setPage = () => {
     const pages = {
-      home: <Home />,
-      profile: <Profile user={user}/>,
-      form: <Form user={user} setPageMode={setPageMode}/>,
-      form_complete:<FormComplete/>
+      home: <Home user={user}/>,
+      profile: <Profile user={user} setPageMode={setPageMode} />,
+      form: <Form user={user} setPageMode={setPageMode} />,
+      form_complete: <FormComplete user={user}/>,
     };
     return pages[pageMode];
   };
 
   if (isLoading) {
-    return "Loading...";
+    const sampleUser = {
+      name: "　",
+      icon_url:
+        "https://kotobank.jp/image/dictionary/daijisen/media/104880L.jpg",
+    };
+    return (
+      <Sidebar
+        user={sampleUser}
+        pageMode={pageMode}
+        setPageMode={setPageMode}
+      />
+    );
   } else {
     return (
       <div className="App">

@@ -1,0 +1,17 @@
+
+
+.menuButton{
+    background-color:#f8fafc;
+    border:gray 1px solid;
+    transition:background-color 0.5s;
+}
+
+.activeMenu{
+    background-color: lightgray;
+    transition:background-color 0.5s;
+}
+
+.menuButton:hover{
+    background-color: lightgray;
+    transition:background-color 0.5s;
+}

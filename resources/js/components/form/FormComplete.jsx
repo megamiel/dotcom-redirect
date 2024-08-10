@@ -1,6 +1,6 @@
 import React from 'react'
 
-const FormComplete = () => {
+const FormComplete = ({user}) => {
   return (
     <div>リザルトフォーム送信完了</div>
   )

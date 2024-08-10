@@ -54,8 +54,8 @@ class ResultController extends Controller
 
         $result = new Result();
         $result->user_id = $request->get('user_id');
+        $result->exam_category = $request->get('exam_category');
         $result->exam_num = $request->get('exam_num');
-        $result->subject = $request->get('subject');
         $result->question_num = $request->get('question_num');
         $result->score = $request->get('score');
         $result->share = $request->get('share');
@@ -63,20 +63,42 @@ class ResultController extends Controller
 
         $user = User::find($result->user_id);
 
+        $questionsMap = [
+            "基本情報技術者試験" => [
+                "疑似言語",
+                "情報セキュリティ"
+            ],
+            "応用情報技術者試験" => [
+                "情報セキュリティ",
+                "経営戦略",
+                "プログラミング",
+                "システムアーキテクチャ",
+                "ネットワーク",
+                "データベース",
+                "組込みシステム開発",
+                "情報システム開発",
+                "プロジェクトマネジメント",
+                "サービスマネジメント",
+                "システム監査",
+            ],
+            "情報処理安全確保支援士試験"=>[
+                "午後1 問1",
+                "午後1 問2",
+                "午後1 問3",
+                "午後1 問4",
+                "午後2 問1",
+                "午後2 問1",
+            ]
+        ];
 
-        if ($result->subject == "情報処理安全確保支援士試験") {
-            $subject="セキスぺ";
+        if($result->exam_category=="情報処理安全確保支援士試験"){
+            $notifyExamCategory="セキスぺ";
         }else{
-            $subject=$result->subject;
+            $notifyExamCategory=$result->exam_category;
         }
+        $questions=$questionsMap[$result->exam_category];
 
-        $questionNumMessage = "";
-        if ($subject == "セキスぺ") {
-            $pm = floor($result->question_num / 4 + 1);
-            $qn = $result->question_num % 4 + 1;
-            $questionNumMessage = "\n・問題：午後{$pm}問{$qn}";
-        }
-        $message = "\n{$user->name}の学習結果\n・試験：{$result->exam_num}\n・科目：{$subject}{$questionNumMessage}\n・点数：{$result->score}%\n・用語・共有\n{$result->share}";
+        $message = "\n{$user->name}の学習結果\n・区分：{$notifyExamCategory}\n・回次：{$result->exam_num}\n・問題：{$questions[$result->question_num]}\n・点数：{$result->score}%\n・用語・共有\n{$result->share}";
         $this->lineNotify($message);
 
         return $result;
@@ -106,8 +128,8 @@ class ResultController extends Controller
     {
         $id = $request->get('id');
         $result = Result::find($id);
+        $result->exam_category = $request->get('exam_category');
         $result->exam_num = $request->get('exam_num');
-        $result->subject = $request->get('subject');
         $result->question_num = $request->get('question_num');
         $result->score = $request->get('score');
         $result->share = $request->get('share');

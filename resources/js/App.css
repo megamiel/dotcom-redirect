@@ -5,3 +5,8 @@
 body::-webkit-scrollbar {
   display: none;
 }
+
+.scNumber {
+  font-family: serif;
+  font-weight:bold;
+}

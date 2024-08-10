@@ -17,8 +17,8 @@ class StoreRequest extends FormRequest
         return [
             'id'=>'string',
             'user_id'=>'exists:users,id',
+            'exam_category'=>'required|string',
             'exam_num'=>'required|string',
-            'subject'=>'required|string',
             'question_num'=>'required|integer',
             'score'=>'required|numeric',
             'share'=>'required|string',

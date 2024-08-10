@@ -18,6 +18,7 @@ class CreateResultsTable extends Migration
             $table->foreignId('user_id')
             ->references('id')
             ->on('users');
+            $table->text('exam_category');
             $table->text('exam_num');
             $table->text('subject');
             $table->integer('question_num');
