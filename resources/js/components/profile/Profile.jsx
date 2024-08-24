@@ -10,7 +10,7 @@ const Profile = ({ user, setPageMode }) => {
         user={user}
         setPageMode={setPageMode}
       />
-      <ScoreReport user={user} />
+      <ScoreReport user={user} setPageMode={setPageMode}/>
     </>
   );
 };

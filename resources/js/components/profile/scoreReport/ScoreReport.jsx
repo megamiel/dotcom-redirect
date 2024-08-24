@@ -5,10 +5,10 @@ import "./ScoreReport.css";
 import Log from "./log/Log";
 import examCategorys from "../../exam/ExamCategoryData";
 import Grade from "./grade/Grade";
-import Loan from "./Loan";
+import Loan from "./loan/Loan";
 import { AP, FE } from "../../exam/Consts";
 
-const ScoreReport = ({ user }) => {
+const ScoreReport = ({ user,setPageMode }) => {
   const storageExamCategory = localStorage.getItem("examCategory");
   const [examCategory, setExamCategory] = useState(
     storageExamCategory == null ? FE : storageExamCategory
@@ -48,7 +48,7 @@ const ScoreReport = ({ user }) => {
       case "履歴":
         return <Log user={user} results={targetResults} />;
       case "借金":
-        return <Loan user={user} results={targetResults} examCategory={examCategory} />;
+        return <Loan user={user} results={targetResults} examCategory={examCategory} setPageMode={setPageMode} />;
     }
   };
 

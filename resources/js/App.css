@@ -10,3 +10,13 @@ body::-webkit-scrollbar {
   font-family: serif;
   font-weight:bold;
 }
+
+.redirect{
+  color:black;
+  text-decoration:underline;
+  text-decoration-color: black;
+}
+
+.redirect:hover{
+  color:black;
+}

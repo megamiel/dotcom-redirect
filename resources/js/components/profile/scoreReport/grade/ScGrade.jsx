@@ -92,7 +92,7 @@ const ScGrade = ({ results }) => {
       Math.floor(
         (results
           .map((result) => result.score)
-          .reduce((sum, score) => sum + score) /
+          .reduce((sum, score) => parseFloat(sum) + parseFloat(score)) /
           results.length) *
           10
       ) / 10;

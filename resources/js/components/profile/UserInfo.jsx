@@ -46,8 +46,8 @@ const UserInfo = ({ user, setPageMode }) => {
     };
 
     if (inputIcon != null) {
-      uploadImage("test", inputIcon, () => {
-        getImageUrl("test", async (url) => {
+      uploadImage(user.email, inputIcon, () => {
+        getImageUrl(user.email, async (url) => {
           user.icon_url = url;
           user_data.icon_url = url;
           // 保存中...みたいな表示ほしい

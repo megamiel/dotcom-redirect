@@ -9,10 +9,15 @@ import { FORM_COMPLETE } from "../PageModes";
 import API_URI from "../../ApiUri";
 
 const Form = ({ user, setPageMode }) => {
+  const currentExamCategory=sessionStorage.getItem("currentExamCategory");
+  const currentExamQuestion=sessionStorage.getItem("currentExamQuestion")
+  const currentExamName=sessionStorage.getItem("currentExamName");
+  const currentExamNum=parseInt(sessionStorage.getItem("currentExamNum"));
+
   const [selectedExamCategory, setSelectedExamCategory] =
-    useState("non_select");
-  const [selectedExam, setSelectedExam] = useState("non_select");
-  const [selectedQuestionNum, setSelectedQuestionNum] = useState(-1);
+    useState(currentExamCategory==null?"non_select":currentExamCategory);
+  const [selectedExam, setSelectedExam] = useState(currentExamName==null?"non_select":currentExamName);
+  const [selectedQuestionNum, setSelectedQuestionNum] = useState(currentExamNum==null?-1:currentExamNum);
   const [inputedScore, setInputedScore] = useState(null);
   const [scoreInputMessage, setScoreInputMessage] = useState(<></>);
   const [inputedShare, setInputedShare] = useState(null);
@@ -31,6 +36,14 @@ const Form = ({ user, setPageMode }) => {
 
   const scoreInputedeHandler = (input) => {
     if (isNaN(input.value)) {
+      const fraction=input.value.split("/");
+      if(fraction.length==2){
+        const score=Math.floor(fraction[0]/fraction[1]*1000)/10;
+        if(!isNaN(score)&&score!=Infinity){
+          setScoreInputMessage(<></>);
+          setInputedScore(score)
+        }
+      }
     } else {
       setScoreInputMessage(<></>);
       setInputedScore(input.value);
@@ -89,7 +102,7 @@ const Form = ({ user, setPageMode }) => {
       setPageMode(FORM_COMPLETE);
     } else {
       // どこがダメかメッセージ表示する
-      console.log("入力が正しくありません");
+      alert("入力が正しくありません")
     }
   };
 
@@ -159,6 +172,7 @@ const Form = ({ user, setPageMode }) => {
                     name="question_num"
                     value={(i - 1) * 4 + index}
                     onChange={(e) => questionNumSelectedHandler(e.target)}
+                    defaultChecked={currentExamQuestion==i&& (index+1)==currentExamNum}
                   />
                   午後<span className="scNumber">{i == 1 ? "Ⅰ" : "Ⅱ"}</span>:問
                   {index + 1}
@@ -188,6 +202,7 @@ const Form = ({ user, setPageMode }) => {
             <select
               onChange={(e) => examCategorySelectedHandler(e.target)}
               style={{ textAlign: "center" }}
+              defaultValue={currentExamCategory}
             >
               <option key={-1} value="non_select">
                 - 選択 -
@@ -202,6 +217,7 @@ const Form = ({ user, setPageMode }) => {
               name="exam_num"
               style={{ textAlign: "center" }}
               onChange={(e) => examSelectedHandler(e.target)}
+              defaultValue={currentExamName}
             >
               <option value="non_select">- 選択 -</option>
               {setExams()}

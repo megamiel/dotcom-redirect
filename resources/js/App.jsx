@@ -62,7 +62,7 @@ const App = () => {
 
   const setPage = () => {
     const pages = {
-      home: <Home user={user}/>,
+      home: <Home user={user} setPageMode={setPageMode}/>,
       profile: <Profile user={user} setPageMode={setPageMode} />,
       form: <Form user={user} setPageMode={setPageMode} />,
       form_complete: <FormComplete user={user}/>,
